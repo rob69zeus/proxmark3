@@ -42,15 +42,15 @@ static int cmd_tail;//Starts as 0
 
 static command_t CommandTable[] = 
 {
-  {"help",  CmdHelp,  1, "This help. Use '<command> help' for details of a particular command."},
-  {"data",  CmdData,  1, "{ Plot window / data buffer manipulation... }"},
-  {"hf",    	CmdHF,    	1, "{ High Frequency commands... }"},
-  {"hw",    CmdHW,    1, "{ Hardware commands... }"},
-  {"lf",    	CmdLF,    	1, "{ Low Frequency commands... }"},
-  {"script", CmdScript,   1,"{ Scripting commands }"},
-  {"quit",  CmdQuit,  1, "Exit program"},
-  {"exit",  CmdQuit,  1, "Exit program"},
-  {NULL, NULL, 0, NULL}
+	{"help",	CmdHelp,	1, "This help. Use '<command> help' for details of a particular command."},
+	{"data", 	CmdData,	1, "{ Plot window / data buffer manipulation... }"},
+	{"hf",   	CmdHF,		1, "{ High Frequency commands... }"},
+	{"hw",   	CmdHW,		1, "{ Hardware commands... }"},
+	{"lf",   	CmdLF,		1, "{ Low Frequency commands... }"},
+	{"script",	CmdScript,	1, "{ Scripting commands }"},
+	{"quit", 	CmdQuit,	1, "Exit program"},
+	{"exit", 	CmdQuit,	1, "Exit program"},
+	{NULL, NULL, 0, NULL}
 };
 
 command_t* getTopLevelCommandTable()
@@ -65,8 +65,7 @@ int CmdHelp(const char *Cmd)
 
 int CmdQuit(const char *Cmd)
 {
-  exit(0);
-  return 0;
+  return 99;
 }
 /**
  * @brief This method should be called when sending a new command to the pm3. In case any old
@@ -97,8 +96,9 @@ void storeCommand(UsbCommand *command)
     memcpy(destination, command, sizeof(UsbCommand));
 
     cmd_head = (cmd_head +1) % CMD_BUFFER_SIZE; //increment head and wrap
-
 }
+
+
 /**
  * @brief getCommand gets a command from an internal circular buffer.
  * @param response location to write command
@@ -117,8 +117,8 @@ int getCommand(UsbCommand* response)
     cmd_tail = (cmd_tail +1 ) % CMD_BUFFER_SIZE;
 
     return 1;
-
 }
+
 
 /**
  * Waits for a certain response type. This method waits for a maximum of
@@ -131,40 +131,42 @@ int getCommand(UsbCommand* response)
  */
 bool WaitForResponseTimeout(uint32_t cmd, UsbCommand* response, size_t ms_timeout) {
   
-  UsbCommand resp;
+	UsbCommand resp;
 	
-	if (response == NULL)
-    response = &resp;
-
-
-  // Wait until the command is received
-  for(size_t dm_seconds=0; dm_seconds < ms_timeout/10; dm_seconds++) {
-
-		while(getCommand(response)) {
-          if(response->cmd == cmd){
-          return true;
-          }
-      }
-        msleep(10); // XXX ugh
-        if (dm_seconds == 200) { // Two seconds elapsed
-          PrintAndLog("Waiting for a response from the proxmark...");
-          PrintAndLog("Don't forget to cancel its operation first by pressing on the button");
-        }
+	if (response == NULL) {
+		response = &resp;
 	}
-    return false;
+
+	// Wait until the command is received
+	for(size_t dm_seconds=0; dm_seconds < ms_timeout/10; dm_seconds++) {
+		while(getCommand(response)) {
+			if(response->cmd == cmd){
+				return true;
+			}
+		}
+		msleep(10); // XXX ugh
+		if (dm_seconds == 200) { // Two seconds elapsed
+			PrintAndLog("Waiting for a response from the proxmark...");
+			PrintAndLog("Don't forget to cancel its operation first by pressing on the button");
+		}
+	}
+	return false;
 }
+
 
 bool WaitForResponse(uint32_t cmd, UsbCommand* response) {
 	return WaitForResponseTimeout(cmd,response,-1);
 }
 
+
 //-----------------------------------------------------------------------------
 // Entry point into our code: called whenever the user types a command and
 // then presses Enter, which the full command line that they typed.
 //-----------------------------------------------------------------------------
-void CommandReceived(char *Cmd) {
-  CmdsParse(CommandTable, Cmd);
+int CommandReceived(char *Cmd) {
+	return CmdsParse(CommandTable, Cmd);
 }
+
 
 //-----------------------------------------------------------------------------
 // Entry point into our code: called whenever we received a packet over USB
@@ -189,12 +191,13 @@ void UsbCommandReceived(UsbCommand *UC)
 
 		case CMD_DOWNLOADED_RAW_ADC_SAMPLES_125K: {
 			memcpy(sample_buf+(UC->arg[0]),UC->d.asBytes,UC->arg[1]);
+			return;
 		} break;
 
 		default:
+			storeCommand(UC);
 			break;
 	}
 
-	storeCommand(UC);
 }
 

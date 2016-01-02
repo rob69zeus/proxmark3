@@ -17,6 +17,7 @@ int CmdData(const char *Cmd);
 void printDemodBuff(void);
 void setDemodBuf(uint8_t *buff, size_t size, size_t startIdx);
 int CmdAskEM410xDemod(const char *Cmd);
+int CmdVikingDemod(const char *Cmd);
 int CmdG_Prox_II_Demod(const char *Cmd);
 int Cmdaskrawdemod(const char *Cmd);
 int Cmdaskmandemod(const char *Cmd);
@@ -27,6 +28,7 @@ int CmdBitsamples(const char *Cmd);
 int CmdBuffClear(const char *Cmd);
 int CmdDec(const char *Cmd);
 int CmdDetectClockRate(const char *Cmd);
+int CmdFDXBdemodBI(const char *Cmd);
 int CmdFSKdemodAWID(const char *Cmd);
 int CmdFSKdemodHID(const char *Cmd);
 int CmdFSKdemodIO(const char *Cmd);
@@ -70,7 +72,7 @@ int getSamples(const char *Cmd, bool silent);
 
 #define MAX_DEMOD_BUF_LEN (1024*128)
 extern uint8_t DemodBuffer[MAX_DEMOD_BUF_LEN];
-extern int DemodBufferLen;
+extern size_t DemodBufferLen;
 extern uint8_t g_debugMode;
 #define BIGBUF_SIZE 40000
 

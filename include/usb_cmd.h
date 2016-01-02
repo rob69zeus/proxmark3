@@ -60,6 +60,8 @@ typedef struct{
 #define CMD_BUFF_CLEAR                                                    0x0105
 #define CMD_READ_MEM                                                      0x0106
 #define CMD_VERSION                                                       0x0107
+#define CMD_STATUS														  0x0108
+#define CMD_PING														  0x0109
 
 // For low-frequency tags
 #define CMD_READ_TI_TYPE                                                  0x0202
@@ -83,8 +85,9 @@ typedef struct{
 #define CMD_INDALA_CLONE_TAG_L                                            0x0213
 #define CMD_T55XX_READ_BLOCK                                              0x0214
 #define CMD_T55XX_WRITE_BLOCK                                             0x0215
-#define CMD_T55XX_READ_TRACE                                              0x0216
+#define CMD_T55XX_RESET_READ                                              0x0216
 #define CMD_PCF7931_READ                                                  0x0217
+#define CMD_PCF7931_WRITE                                                 0x0222
 #define CMD_EM4X_READ_WORD                                                0x0218
 #define CMD_EM4X_WRITE_WORD                                               0x0219
 #define CMD_IO_DEMOD_FSK                                                  0x021A
@@ -95,12 +98,15 @@ typedef struct{
 #define CMD_FSK_SIM_TAG                                                   0x021E
 #define CMD_ASK_SIM_TAG                                                   0x021F
 #define CMD_PSK_SIM_TAG                                                   0x0220
+#define CMD_AWID_DEMOD_FSK                                                0x0221
+#define CMD_VIKING_CLONE_TAG                                              0x0223
+#define CMD_T55XX_WAKEUP                                                  0x0224
+
 
 /* CMD_SET_ADC_MUX: ext1 is 0 for lopkd, 1 for loraw, 2 for hipkd, 3 for hiraw */
 
 // For the 13.56 MHz tags
 #define CMD_ACQUIRE_RAW_ADC_SAMPLES_ISO_15693                             0x0300
-#define CMD_ACQUIRE_RAW_ADC_SAMPLES_ISO_14443                             0x0301
 #define CMD_READ_SRI512_TAG                                               0x0303
 #define CMD_READ_SRIX4K_TAG                                               0x0304
 #define CMD_ISO_14443B_COMMAND                                            0x0305
@@ -118,9 +124,8 @@ typedef struct{
 #define CMD_SIMULATE_HITAG                                                0x0371
 #define CMD_READER_HITAG                                                  0x0372
 
-#define CMD_SIMULATE_TAG_HF_LISTEN                                        0x0380
-#define CMD_SIMULATE_TAG_ISO_14443                                        0x0381
-#define CMD_SNOOP_ISO_14443                                               0x0382
+#define CMD_SIMULATE_TAG_ISO_14443B                                       0x0381
+#define CMD_SNOOP_ISO_14443B                                              0x0382
 #define CMD_SNOOP_ISO_14443a                                              0x0383
 #define CMD_SIMULATE_TAG_ISO_14443a                                       0x0384
 #define CMD_READER_ISO_14443a                                             0x0385
@@ -128,13 +133,19 @@ typedef struct{
 #define CMD_READER_LEGIC_RF                                               0x0388
 #define CMD_WRITER_LEGIC_RF                                               0x0389
 #define CMD_EPA_PACE_COLLECT_NONCE                                        0x038A
+#define CMD_EPA_PACE_REPLAY                                               0x038B
 
+#define CMD_ICLASS_READCHECK                                              0x038F
+#define CMD_ICLASS_CLONE                                                  0x0390
+#define CMD_ICLASS_DUMP                                                   0x0391
 #define CMD_SNOOP_ICLASS                                                  0x0392
 #define CMD_SIMULATE_TAG_ICLASS                                           0x0393
 #define CMD_READER_ICLASS                                                 0x0394
-#define CMD_READER_ICLASS_REPLAY					  					  0x0395
-#define CMD_ICLASS_ISO14443A_WRITE										  0x0397
+#define CMD_READER_ICLASS_REPLAY                                          0x0395
+#define CMD_ICLASS_READBLOCK                                              0x0396
+#define CMD_ICLASS_WRITEBLOCK                                             0x0397
 #define CMD_ICLASS_EML_MEMSET                                             0x0398
+#define CMD_ICLASS_AUTHENTICATION                                         0x0399
 
 // For measurements of the antenna tuning
 #define CMD_MEASURE_ANTENNA_TUNING                                        0x0400
@@ -163,20 +174,21 @@ typedef struct{
 #define CMD_MIFARE_NESTED                                                 0x0612
 
 #define CMD_MIFARE_READBL                                                 0x0620
-#define CMD_MIFAREU_READBL						  0x0720
+#define CMD_MIFAREU_READBL                                                0x0720
 #define CMD_MIFARE_READSC                                                 0x0621
-#define CMD_MIFAREU_READCARD						  0x0721
+#define CMD_MIFAREU_READCARD                                              0x0721
 #define CMD_MIFARE_WRITEBL                                                0x0622
-#define CMD_MIFAREU_WRITEBL						                          0x0722
-#define CMD_MIFAREU_WRITEBL_COMPAT					                      0x0723
+#define CMD_MIFAREU_WRITEBL                                               0x0722
+#define CMD_MIFAREU_WRITEBL_COMPAT                                        0x0723
 
 #define CMD_MIFARE_CHKKEYS                                                0x0623
 
 #define CMD_MIFARE_SNIFFER                                                0x0630
 //ultralightC
-#define CMD_MIFAREUC_AUTH1						                          0x0724
-#define CMD_MIFAREUC_AUTH2						                          0x0725
-#define CMD_MIFAREUC_READCARD						                      0x0726
+#define CMD_MIFAREUC_AUTH                                                 0x0724
+//0x0725 and 0x0726 no longer used 
+#define CMD_MIFAREUC_SETPWD                                               0x0727
+
 
 // mifare desfire
 #define CMD_MIFARE_DESFIRE_READBL                                         0x0728
@@ -186,6 +198,8 @@ typedef struct{
 #define CMD_MIFARE_DES_READER                                             0x072c
 #define CMD_MIFARE_DESFIRE_INFO                                           0x072d
 #define CMD_MIFARE_DESFIRE                                                0x072e
+
+#define CMD_HF_SNIFFER                                                    0x0800
 
 #define CMD_UNKNOWN                                                       0xFFFF
 
@@ -199,10 +213,12 @@ typedef struct{
 
 //Iclass reader flags
 #define FLAG_ICLASS_READER_ONLY_ONCE    0x01
-#define FLAG_ICLASS_READER_CC       0x02
-#define FLAG_ICLASS_READER_CSN		0x04
-#define FLAG_ICLASS_READER_CONF		0x08
-#define FLAG_ICLASS_READER_AA		0x10
+#define FLAG_ICLASS_READER_CC           0x02
+#define FLAG_ICLASS_READER_CSN          0x04
+#define FLAG_ICLASS_READER_CONF         0x08
+#define FLAG_ICLASS_READER_AA           0x10
+#define FLAG_ICLASS_READER_ONE_TRY      0x20
+#define FLAG_ICLASS_READER_CEDITKEY     0x40
 
 
 

@@ -1,6 +1,7 @@
 # .gitignore
 # don't push these files to the repository
 
+.history
 *.log
 *.eml
 *.o
@@ -12,6 +13,7 @@
 *.bin
 *.dll
 *.moc.cpp
+*.z
 *.exe
 proxmark
 proxmark3

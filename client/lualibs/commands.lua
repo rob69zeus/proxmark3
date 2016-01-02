@@ -20,7 +20,8 @@ local _commands = {
 	CMD_BUFF_CLEAR =                                                     0x0105,
 	CMD_READ_MEM =                                                       0x0106,
 	CMD_VERSION =                                                        0x0107,
-
+	CMD_STATUS =                                                         0x0108,
+	CMD_PING =                                                           0x0109,
 	--// For low-frequency tags
 	CMD_READ_TI_TYPE =                                                   0x0202,
 	CMD_WRITE_TI_TYPE =                                                  0x0203,
@@ -43,7 +44,7 @@ local _commands = {
 	CMD_INDALA_CLONE_TAG_L =                                             0x0213,
 	CMD_T55XX_READ_BLOCK =                                               0x0214,
 	CMD_T55XX_WRITE_BLOCK =                                              0x0215,
-	CMD_T55XX_READ_TRACE =                                               0x0216,
+	CMD_T55XX_RESET_READ =                                               0x0216,
 	CMD_PCF7931_READ =                                                   0x0217,
 	CMD_EM4X_READ_WORD =                                                 0x0218,
 	CMD_EM4X_WRITE_WORD =                                                0x0219,
@@ -54,12 +55,13 @@ local _commands = {
 	CMD_FSK_SIM_TAG =                                                    0x021E,
 	CMD_ASK_SIM_TAG =                                                    0x021F,
 	CMD_PSK_SIM_TAG =                                                    0x0220,
-
+	CMD_AWID_DEMOD_FSK =                                                 0x0221,
+	CMD_VIKING_CLONE_TAG =                                               0x0223,
+	CMD_T55XX_WAKEUP =                                                   0x0224,
 	--/* CMD_SET_ADC_MUX: ext1 is 0 for lopkd, 1 for loraw, 2 for hipkd, 3 for hiraw */
 
 	--// For the 13.56 MHz tags
 	CMD_ACQUIRE_RAW_ADC_SAMPLES_ISO_15693 =                              0x0300,
-	CMD_ACQUIRE_RAW_ADC_SAMPLES_ISO_14443 =                              0x0301,
 	CMD_READ_SRI512_TAG =                                                0x0303,
 	CMD_READ_SRIX4K_TAG =                                                0x0304,
 	CMD_READER_ISO_15693 =                                               0x0310,
@@ -76,9 +78,8 @@ local _commands = {
 	CMD_SIMULATE_HITAG =                                                 0x0371,
 	CMD_READER_HITAG =                                                   0x0372,
 
-	CMD_SIMULATE_TAG_HF_LISTEN =                                         0x0380,
-	CMD_SIMULATE_TAG_ISO_14443 =                                         0x0381,
-	CMD_SNOOP_ISO_14443 =                                                0x0382,
+	CMD_SIMULATE_TAG_ISO_14443B =                                        0x0381,
+	CMD_SNOOP_ISO_14443B =                                               0x0382,
 	CMD_SNOOP_ISO_14443a =                                               0x0383,
 	CMD_SIMULATE_TAG_ISO_14443a =                                        0x0384,
 	CMD_READER_ISO_14443a =                                              0x0385,
@@ -88,11 +89,17 @@ local _commands = {
 	CMD_EPA_PACE_COLLECT_NONCE =                                         0x038A,
 	--//CMD_EPA_ =                                                         0x038B,
 
+	CMD_ICLASS_READCHECK =                                               0x038F,
+	CMD_ICLASS_CLONE =                                                   0x0390,
+	CMD_ICLASS_DUMP =                                                    0x0391,
 	CMD_SNOOP_ICLASS =                                                   0x0392,
 	CMD_SIMULATE_TAG_ICLASS =                                            0x0393,
 	CMD_READER_ICLASS =                                                  0x0394,
-	CMD_READER_ICLASS_REPLAY =											 0x0395,
-	CMD_ICLASS_ISO14443A_WRITE =										 0x0397,
+	CMD_READER_ICLASS_REPLAY =                                           0x0395,
+	CMD_ICLASS_READBLOCK =                                               0x0396,
+	CMD_ICLASS_WRITEBLOCK =                                              0x0397,
+	CMD_ICLASS_EML_MEMSET =                                              0x0398,
+	CMD_ICLASS_AUTHENTICATION =                                          0x0399,
 
 	--// For measurements of the antenna tuning
 	CMD_MEASURE_ANTENNA_TUNING =                                         0x0400,
@@ -135,11 +142,9 @@ local _commands = {
 	CMD_MIFARE_SNIFFER =                                                 0x0630,
 
 	--//ultralightC
-	CMD_MIFAREUC_AUTH1 =						                         0x0724,
-	CMD_MIFAREUC_AUTH2 =						                         0x0725,
-	CMD_MIFAREUC_READCARD =		   					                     0x0726,
-	CMD_MIFAREUC_SETPWD =												 0x0727,
-	CMD_MIFAREU_SETUID = 							                     0x0728,
+	CMD_MIFAREUC_AUTH =                                                  0x0724,
+	CMD_MIFAREUC_SETPWD =                                                0x0727,
+	CMD_MIFAREU_SETUID =                                                 0x0728,
 
 	--// mifare desfire
 	CMD_MIFARE_DESFIRE_READBL =                                          0x0728,
